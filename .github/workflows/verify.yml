@@ -52,8 +52,6 @@ jobs:
         include:
           - check: zakura-graph
             fetch-depth: 1
-          - check: wallet-lib-modes
-            fetch-depth: 1
           - check: vendor-ancestry
             fetch-depth: 0
     env:
@@ -69,6 +67,25 @@ jobs:
           key: repository-${{ matrix.check }}
           workspaces: . -> target/dev-lanes
       - run: python3 scripts/dev.py verify --only "${{ matrix.check }}"
+
+  # Not required: its external consumers resolve from crates.io without
+  # this workspace's `[patch.crates-io]`, so it fails while git sources are
+  # pinned.
+  wallet-lib-modes:
+    needs: prepare
+    if: needs.prepare.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      WALLET_LIB_BUILD_ROOT: ${{ github.workspace }}/target/dev-lanes
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: rustup show
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          key: repository-wallet-lib-modes
+          workspaces: . -> target/dev-lanes
+      - run: python3 scripts/dev.py verify --only wallet-lib-modes
 
   test-configurations:
     needs: prepare
@@ -117,6 +134,7 @@ jobs:
       - run: git diff --exit-code
 
   tests:
+    name: Required status checks have passed
     if: always()
     needs: [prepare, lightweight, repository-checks, test-configurations, protobuf]
     runs-on: ubuntu-latest
