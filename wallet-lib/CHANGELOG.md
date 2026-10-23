@@ -8,6 +8,10 @@ and this library adheres to Rust's notion of
 ## [Unreleased]
 
 ### Changed
+- The `lrz` backend now requires the stable librustzcash releases that set the NU7
+  mainnet activation height (`zcash_client_backend` `0.25.0`, `zcash_client_sqlite`
+  `0.23.0`, `zcash_keys` `0.17.0`, `pczt` `0.10.0`, `zcash_primitives` `0.31.0`) in
+  place of their pre-releases.
 - Updated the Zakura PCZT dependency to `zakura-pczt 0.1.0-rc4`.
 - Updated the Zakura backend to the Common v2 release family (`2.0`), at the
   revision that migrates it to `bip32 0.6`, `secp256k1 0.33`, and
